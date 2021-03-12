@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres_db
+      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_USER: postgres_user
+      PGDATA: /database
+
+  concourse:
+    image: concourse/concourse
+    command: quickstart
+    privileged: true
+    depends_on: [postgres]
+    ports: ["8080:8080"]
+    environment:
+      CONCOURSE_POSTGRES_HOST: postgres
+      CONCOURSE_POSTGRES_USER: postgres_user
+      CONCOURSE_POSTGRES_PASSWORD: postgres_pass
+      CONCOURSE_POSTGRES_DATABASE: postgres_db
+      CONCOURSE_EXTERNAL_URL: http://localhost:8080
+      CONCOURSE_ADD_LOCAL_USER: test:test
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+      CONCOURSE_WORKER_BAGGAGECLAIM_DRIVER: overlay
+      CONCOURSE_CLIENT_SECRET: Y29uY291cnNlLXdlYgo=
+      CONCOURSE_TSA_CLIENT_SECRET: Y29uY291cnNlLXdvcmtlcgo=
+  gogs:
+    image: gogs/gogs:latest
+    restart: always
+    ports:
+      - "10022:22"
+      - "3000:3000"
+
